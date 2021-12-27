@@ -47,28 +47,23 @@ if __name__ == "__main__":
   # -------------------
 
   # name, features, weights
-  sigs = []
   df_S = pd.read_csv ("{}/dataframe-{}-{}.csv".format(config['output']['dfdir'],cat,'VBS'),header=0)
-  sigs.append (['VBS', df_S, config['input']['signal_XS'].split ()[0]])
   print ('read VBS: ', df_S['weightTN'].sum ())
   X_sig = df_S [config['study']['trainvars'].split ()]
-  sigs.append (['VBS', X_sig, df_S['weightTN']])
 
   # get the backgrounds
   # -------------------
 
-  bkgs = []
   # loop over bkg samples
   sample = config['input']['bkg'].split ()[0]
   df_B = pd.read_csv ("{}/dataframe-{}-{}.csv".format(config['output']['dfdir'],cat,sample),header=0)
-  X_bkg = df_B [config['study']['trainvars'].split ()]
-  bkgs.append ([sample, X_bkg, df_B['weightTN']])
   print ('read ', sample, ': ', df_B['weightTN'].sum ())
+  X_bkg = df_B [config['study']['trainvars'].split ()]
 
   # get the number of envents in the signal and in the background samples
   # -------------------
 
-  N = min (sigs[0][1].shape[0], bkgs[0][1].shape[0])
+  N = min (X_sig.shape[0], X_bkg.shape[0])
   print ('minimum common number of events', N)
 
   # transform the input variables
