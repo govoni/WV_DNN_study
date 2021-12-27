@@ -39,10 +39,14 @@ for var in config['study']['variables'].split ():
                color     = config['plot']['VBS'].split ()[0],
                edgecolor = config['plot']['VBS'].split ()[1],
                weights   = df_S['weightTN'] ,
-               # legend   = False , # the pandas df legend looks like done by excel...
                range     = (hmin, hmax) ,
                bins      = np.arange (hmin, hmax, step) ,
+               label     = 'VBS' ,
                )
+  if (len (config['plot'][var].split ()) == 4): plt.xlabel (var + ' (' + config['plot'][var].split ()[3] + ')')
+  else                                        : plt.xlabel (var)
+  plt.legend (loc = 'upper right')
+  plt.yscale (config['plot']['yscale'])
   plt.savefig (var + '_sig.png')
   plt.clf ()
 
