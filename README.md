@@ -24,12 +24,11 @@
       * various zeppenfeld's
     * fix the edgecolors problem in the stack plots  
     * add overflow and underflow bins 
-    * plot a comparison of signal to bkgs's in shapes
   * variables
     * preprocess variables
       * same ranges (apply same preprocessing to signal and bkg)
       * same number of events for each sample used in the training
-    * wasserstein distance
+    * Wasserstein distance
     * SHAP
   * DNN
     * first training with signal and one background  
