@@ -15,6 +15,7 @@
   * ```readDF_05.py```: compare signal to backgrounds, in shapes
   * ```testDNN_01.py```: operate standard transformations on input variables
     when using a single background sample
+  * ```testDNN_02.py```: implement a DNN model
 
 
 ## TODO
