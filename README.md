@@ -13,6 +13,9 @@
   * ```readDF_04.py```: compare signal to backgrounds, with the proper normalisations,
     with the backgrounds stacked on top of each other     
   * ```readDF_05.py```: compare signal to backgrounds, in shapes
+  * ```testDNN_01.py```: operate standard transformations on input variables
+    when using a single background sample
+
 
 ## TODO
 
@@ -31,8 +34,13 @@
     * Wasserstein distance
     * SHAP
   * DNN
+    * use Keras - I understand one can feed pandas dataframes to it, if containing floats, will test it later
     * first training with signal and one background  
 
 ## QUESTIONS
 
   * why does the DY in the boosted_mu category have events with weight 0?
+
+## USEFUL LINKS
+
+  * https://github.com/UniMiBAnalyses/ML_classification/blob/master/Training_v3_resolved_weights_Aurora.ipynb
