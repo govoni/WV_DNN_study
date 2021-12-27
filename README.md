@@ -10,6 +10,9 @@
     associating each dataframe to its name and to the corresponding cross-section
   * ```readDF_02.py```: produce simple signal histograms from the pandas dataframe
   * ```readDF_03.py```: produce simple background histograms from the pandas dataframe
+  * ```readDF_04.py```: compare signal to backgrounds, with the proper normalisations,
+    with the backgrounds stacked on top of each other     
+  * ```readDF_05.py```: compare signal to backgrounds, in shapes
 
 ## TODO
 
