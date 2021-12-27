@@ -28,9 +28,6 @@
     * fix the edgecolors problem in the stack plots  
     * add overflow and underflow bins 
   * variables
-    * preprocess variables
-      * same ranges (apply same preprocessing to signal and bkg)
-      * same number of events for each sample used in the training
     * Wasserstein distance
     * SHAP
   * DNN
