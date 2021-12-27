@@ -20,9 +20,7 @@ cat = 'boost_sig_mu'
 # get the signal
 # -------------------
 
-signals = []
 df_S = pd.read_csv ("{}/dataframe-{}-{}.csv".format(config['output']['dfdir'],cat,'VBS'),header=0)
-signals.append (['VBS', df_S, config['input']['signal_XS'].split ()[0]])
 
 # plot signal distributions
 # -------------------
