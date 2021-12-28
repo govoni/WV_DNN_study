@@ -2,6 +2,7 @@
 
 ## content of the folder
 
+  * ```params-boost_sig_mu.cfg```: input config file for the data analysis
   * ```readNtuple.py```: translate root ntuples into Pandas
     * usage: ```./readNtuple.py -c readNtuple.cfg```
   * ```readDF_01.py```: for one single category, 
@@ -15,7 +16,9 @@
   * ```readDF_05.py```: compare signal to backgrounds, in shapes
   * ```testDNN_01.py```: operate standard transformations on input variables
     when using a single background sample
-  * ```testDNN_02.py```: implement a DNN model
+  * ```testDNN_02.py```: prepare one input signal and one input bkg sample, 
+    build a DNN model based on parameters from the config file
+  * ```testDNN_03.py```: configure the first training of the DNN model
 
 
 ## TODO
@@ -32,7 +35,6 @@
     * Wasserstein distance
     * SHAP
   * DNN
-    * use Keras - I understand one can feed pandas dataframes to it, if containing floats, will test it later
     * first training with signal and one background  
 
 ## QUESTIONS

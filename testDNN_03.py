@@ -15,6 +15,15 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
+import tensorflow as tf
+
+#from tensorflow import keras 
+from tensorflow.keras import regularizers
+from tensorflow.keras import callbacks
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropout, LeakyReLU
+from tensorflow.keras.optimizers.schedules import InverseTimeDecay
+
 
 def readSample (pd, config, cat, sample) :
   df = pd.read_csv ("{}/dataframe-{}-{}.csv".format (config['output']['dfdir'], cat, sample), header=0)
@@ -74,8 +83,6 @@ if __name__ == "__main__":
 
   #  - https://scikit-learn.org/stable/modules/preprocessing.html
 
-  from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
-
   # concatenate signal and bkg, so that both are transformed in the same way
   X = np.vstack([X_sig[:N], X_bkg[:N]])
   scaler = StandardScaler ()
@@ -91,15 +98,14 @@ if __name__ == "__main__":
   W     = np.hstack ([W_sig[:N], W_bkg[:N]])
   Wnn   = np.hstack ([Wnn_sig[:N], Wnn_bkg[:N]])
 
-  from sklearn.model_selection import train_test_split
   # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-  X_train, X_test, y_train, y_test, W_train, W_test , Wnn_train, Wnn_test = \
-            train_test_split (
-              X_scaled, Y,  W, Wnn, 
-              test_size    = 0.5,    # fraction of samples used for testing
-              random_state = 41,     # equivalent to the random seed
-              stratify     = Y       # useful with several classes of samples, it seems
-            )
+  X_train, X_test, y_train, y_test, W_train, W_test, Wnn_train, Wnn_test = \
+    train_test_split (
+      X_scaled, Y,  W, Wnn, 
+      test_size    = 0.5,    # fraction of samples used for testing
+      random_state = 41,     # equivalent to the random seed
+      stratify     = Y       # useful with several classes of samples, it seems
+    )
 
   print ('Training   dataset: ', X_train.shape)
   print ('Test + Val dataset: ', X_test.shape)
@@ -107,32 +113,64 @@ if __name__ == "__main__":
   # build the DNN model
   # -------------------
 
-  import tensorflow as tf
-
-  #from tensorflow import keras 
-  from tensorflow.keras.models import Sequential
-  from tensorflow.keras import regularizers
-  from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropout , LeakyReLU
-
   DNNlayers = config['study']['DNNlayers'].split ()
   model = Sequential ()
   model.add (Dense (
-          config['study'][DNNlayers[0]].split ()[0], 
-          input_dim = len (config['study']['trainvars'].split ()) ,
-          activation = config['study'][DNNlayers[0]].split ()[1] ,
-        ))
+      config['study'][DNNlayers[0]].split ()[0], 
+      input_dim = len (config['study']['trainvars'].split ()) ,
+      activation = config['study'][DNNlayers[0]].split ()[1] ,
+    ))
   # loop over additional layers
   for iLayer in range (1, len (DNNlayers)) :
     model.add (Dense (
-            config['study'][DNNlayers[iLayer]].split ()[0], 
-            activation = config['study'][DNNlayers[iLayer]].split ()[1] ,
-          ))
+        config['study'][DNNlayers[iLayer]].split ()[0], 
+        activation = config['study'][DNNlayers[iLayer]].split ()[1] ,
+      ))
     # END - loop over additional layers
 
   model.compile (
-          optimizer = config['study']['DNNoptimizer'] ,
-          loss      = config['study']['DNNloss'] ,
-          metrics   = config['study']['DNNmetrics'].split () ,
-        )
+      optimizer = config['study']['DNNoptimizer'] ,
+      loss      = config['study']['DNNloss'] ,
+      metrics   = config['study']['DNNmetrics'].split () ,
+    )
 
-  print (model.summary ())
+  # train the DNN model
+  # -------------------
+
+  # callbacks 
+  #  - A callback is an object that can perform actions 
+  #    at various stages of training (e.g. at the start or end of an epoch, 
+  #    before or after a single batch, etc).
+  #  - https://keras.io/api/callbacks/
+  #  - https://blog.paperspace.com/tensorflow-callbacks/
+
+  early_stopping = callbacks.EarlyStopping (
+      monitor              = 'val_loss', 
+      min_delta            = float (config['study']['DNNEarlyStop'][1]), 
+      patience             = float (config['study']['DNNEarlyStop'][0]), 
+      verbose              = 0, 
+      mode                 = 'auto', 
+      baseline             = None, 
+      restore_best_weights = True
+    )
+
+  # LearningRateScheduler or ReduceLROnPlateau may become a useful tool
+
+  used_callbacks = [early_stopping]
+
+  history = model.fit (
+        X_train, y_train,
+        sample_weight   = W_train,
+        epochs          = int (config['study']['DNNepochs']),
+        validation_data = (X_test, y_test, W_test),
+        callbacks       = used_callbacks,
+        shuffle         = True,
+        batch_size      = int (config['study']['DNNbatchSize']),
+        #  class_weight= {0:1.8,1:1}
+        verbose         = True ,
+    )
+
+
+
+
+
