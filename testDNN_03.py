@@ -25,33 +25,8 @@ from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropo
 from tensorflow.keras.optimizers.schedules import InverseTimeDecay
 
 
-def readSample (pd, config, cat, sample) :
-  df = pd.read_csv ("{}/dataframe-{}-{}.csv".format (config['output']['dfdir'], cat, sample), header=0)
-  X = df [config['study']['trainvars'].split ()]
-  Wtot = df ['weightTN'].sum ()
-  W = [w / Wtot for w in df ['weightTN']]
-  Wnn = df ['weightTN']
-  print ('read ', sample, ': ', df['weightTN'].sum ())
-  return X, W, Wnn
+from utils import *
 
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
-
-
-def compareSamples (lista, N_evt, N_var, label) :
-  # loop over vars
-  for iVar in range (3):
-    sig = [e[iVar] for e in lista[:N]]
-    bkg = [e[iVar] for e in lista[N:]]
-    plt.hist (sig, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'red')
-    plt.hist (bkg, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'blue')
-    plt.savefig ('var_' + str (iVar) + label + '.png')
-    plt.clf ()
-    # END - loop over vars
-  return
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
 if __name__ == "__main__":
@@ -99,7 +74,7 @@ if __name__ == "__main__":
   Wnn   = np.hstack ([Wnn_sig[:N], Wnn_bkg[:N]])
 
   # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-  X_train, X_test, y_train, y_test, W_train, W_test, Wnn_train, Wnn_test = \
+  X_train, X_test, Y_train, Y_test, W_train, W_test, Wnn_train, Wnn_test = \
     train_test_split (
       X_scaled, Y,  W, Wnn, 
       test_size    = 0.5,    # fraction of samples used for testing
@@ -114,6 +89,9 @@ if __name__ == "__main__":
   # -------------------
 
   DNNlayers = config['study']['DNNlayers'].split ()
+
+  # the DNN model
+  #  - https://www.tensorflow.org/api_docs/python/tf/keras/Model
   model = Sequential ()
   model.add (Dense (
       config['study'][DNNlayers[0]].split ()[0], 
@@ -133,6 +111,8 @@ if __name__ == "__main__":
       loss      = config['study']['DNNloss'] ,
       metrics   = config['study']['DNNmetrics'].split () ,
     )
+
+  print (model.summary ())
 
   # train the DNN model
   # -------------------
@@ -156,20 +136,24 @@ if __name__ == "__main__":
 
   # LearningRateScheduler or ReduceLROnPlateau may become a useful tool
 
-  used_callbacks = [early_stopping]
+  used_callbacks = []
+#  used_callbacks = [early_stopping]
 
   history = model.fit (
-        X_train, y_train,
+        X_train, Y_train,
         sample_weight   = W_train,
         epochs          = int (config['study']['DNNepochs']),
-        validation_data = (X_test, y_test, W_test),
+        validation_data = (X_test, Y_test, W_test),
         callbacks       = used_callbacks,
         shuffle         = True,
         batch_size      = int (config['study']['DNNbatchSize']),
         #  class_weight= {0:1.8,1:1}
-        verbose         = True ,
+        verbose         = False ,
     )
 
+  plotMetric (history, 'loss')
+  for metric in config['study']['DNNmetrics'].split ():
+    plotMetric (history, metric.lower ())
 
 
 

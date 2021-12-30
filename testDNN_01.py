@@ -15,21 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
-
-def compareSamples (lista, N_evt, N_var, label) :
-  # loop over vars
-  for iVar in range (3):
-    sig = [e[iVar] for e in lista[:N]]
-    bkg = [e[iVar] for e in lista[N:]]
-    plt.hist (sig, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'red')
-    plt.hist (bkg, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'blue')
-    plt.savefig ('var_' + str (iVar) + label + '.png')
-    plt.clf ()
-    # END - loop over vars
-  return
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+from utils import *
 
 
 if __name__ == "__main__":

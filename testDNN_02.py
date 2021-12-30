@@ -15,34 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, RobustScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split
 
-
-def readSample (pd, config, cat, sample) :
-  df = pd.read_csv ("{}/dataframe-{}-{}.csv".format (config['output']['dfdir'], cat, sample), header=0)
-  X = df [config['study']['trainvars'].split ()]
-  Wtot = df ['weightTN'].sum ()
-  W = [w / Wtot for w in df ['weightTN']]
-  Wnn = df ['weightTN']
-  print ('read ', sample, ': ', df['weightTN'].sum ())
-  return X, W, Wnn
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
-
-
-def compareSamples (lista, N_evt, N_var, label) :
-  # loop over vars
-  for iVar in range (3):
-    sig = [e[iVar] for e in lista[:N]]
-    bkg = [e[iVar] for e in lista[N:]]
-    plt.hist (sig, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'red')
-    plt.hist (bkg, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'blue')
-    plt.savefig ('var_' + str (iVar) + label + '.png')
-    plt.clf ()
-    # END - loop over vars
-  return
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+from utils import *
 
 
 if __name__ == "__main__":
@@ -115,6 +88,9 @@ if __name__ == "__main__":
   from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropout , LeakyReLU
 
   DNNlayers = config['study']['DNNlayers'].split ()
+
+  # the DNN model
+  #  - https://www.tensorflow.org/api_docs/python/tf/keras/Model
   model = Sequential ()
   model.add (Dense (
           config['study'][DNNlayers[0]].split ()[0], 
