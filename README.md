@@ -4,6 +4,7 @@
 
   * ```params*.cfg```: input config files for the data analysis
   * ```utils.py```: generic utility functions
+  * ```testUtils.py```: testing the utils library
   * ```readNtuple.py```: translate root ntuples into Pandas
     * usage: ```./readNtuple.py -c readNtuple.cfg```
   * ```readDF_01.py```: for one single category, 

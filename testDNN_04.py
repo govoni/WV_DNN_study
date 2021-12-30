@@ -36,7 +36,7 @@ if __name__ == "__main__":
   config = configparser.ConfigParser ()
   config.read (args.config)
 
-  outFolder = getOutputFolderName (config['output']['tag'])
+  outFolder = createOutputFolder (config['output']['tag'])
 
   cat = 'boost_sig_mu'
 

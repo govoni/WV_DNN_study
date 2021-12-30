@@ -100,6 +100,8 @@ if __name__ == "__main__":
   config = configparser.ConfigParser ()
   config.read (args.config)
 
+  outFolder = createOutputFolder (config)
+
   cat = 'boost_sig_mu'
 
   # get the signal and background samples

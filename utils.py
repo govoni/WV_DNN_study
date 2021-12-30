@@ -1,5 +1,8 @@
 # general utility functions
 
+import os
+import configparser
+
 
 def getOutputFolderName (tag):
   folders = [elem for elem in os.listdir ('./') if os.path.isdir (elem) if elem.startswith (tag)]
@@ -7,6 +10,17 @@ def getOutputFolderName (tag):
   if (len (folders) > 0) :
     num = sorted ([int (elem.split ('-')[-1]) for elem in folders])[-1] + 1
   return tag + '-' + str (num).zfill (3)
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+
+def createOutputFolder (config):
+  name = getOutputFolderName (config['output']['tag'])
+  if os.path.exists ('./' + name) == False: os.mkdir ('./' + name)  
+  with open(name + '/params.cfg', 'w') as configfile:
+    config.write (configfile)
+  return name
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
@@ -25,14 +39,14 @@ def readSample (pd, config, cat, sample) :
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-def compareSamples (lista, N_evt, N_var, label) :
+def compareSamples (lista, N_evt, N_var, label, outFolder = './') :
   # loop over vars
   for iVar in range (3):
     sig = [e[iVar] for e in lista[:N]]
     bkg = [e[iVar] for e in lista[N:]]
     plt.hist (sig, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'red')
     plt.hist (bkg, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'blue')
-    plt.savefig ('var_' + str (iVar) + label + '.png')
+    plt.savefig (outFolder + '/var_' + str (iVar) + label + '.png')
     plt.clf ()
     # END - loop over vars
   return
@@ -48,7 +62,7 @@ def plotMetric (history, metric, outFolder = './'):
   plt.ylabel (metric)
   plt.xlabel ('epoch')
   plt.legend (loc = 'upper right')
-  plt.savefig (outfolder + '/DNNtraining_' + metric + '.png')
+  plt.savefig (outFolder + '/DNNtraining_' + metric + '.png')
   plt.clf ()
 
 
