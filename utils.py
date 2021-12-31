@@ -1,22 +1,25 @@
 # general utility functions
 
 import os
+import pickle
+import pathlib
 import configparser
+import matplotlib.pyplot as plt
 
 
-def getOutputFolderName (tag):
-  folders = [elem for elem in os.listdir ('./') if os.path.isdir (elem) if elem.startswith (tag)]
+def getNextName (tag, folder = './') :
+  paths = [elem for elem in os.listdir (folder) if elem.startswith (tag)]
   num = int (1)
-  if (len (folders) > 0) :
-    num = sorted ([int (elem.split ('-')[-1]) for elem in folders])[-1] + 1
+  if (len (paths) > 0) :
+    num = sorted ([int (elem.split ('.')[0].split ('-')[-1]) for elem in paths])[-1] + 1
   return tag + '-' + str (num).zfill (3)
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-def createOutputFolder (config):
-  name = getOutputFolderName (config['output']['tag'])
+def createOutputFolder (config) :
+  name = getNextName (config['output']['tag'])
   if os.path.exists ('./' + name) == False: os.mkdir ('./' + name)  
   with open(name + '/params.cfg', 'w') as configfile:
     config.write (configfile)
@@ -41,7 +44,7 @@ def readSample (pd, config, cat, sample) :
 
 def compareSamples (lista, N_evt, N_var, label, outFolder = './') :
   # loop over vars
-  for iVar in range (3):
+  for iVar in range (3) :
     sig = [e[iVar] for e in lista[:N]]
     bkg = [e[iVar] for e in lista[N:]]
     plt.hist (sig, bins = 20, histtype  = 'stepfilled', fill = False, edgecolor = 'red')
@@ -55,10 +58,10 @@ def compareSamples (lista, N_evt, N_var, label, outFolder = './') :
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-def plotMetric (history, metric, outFolder = './'):
+def plotMetric (history, metric, outFolder = './') :
   fig, ax1 = plt.subplots (figsize=(7,6), dpi=100)
-  plt.plot (history.history[metric], label='train')
-  plt.plot (history.history['val_' + metric], label='val')
+  plt.plot (history[metric], label='train')
+  plt.plot (history['val_' + metric], label='val')
   plt.ylabel (metric)
   plt.xlabel ('epoch')
   plt.legend (loc = 'upper right')
@@ -69,7 +72,7 @@ def plotMetric (history, metric, outFolder = './'):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-def ave (lista):
+def ave (lista) :
   tot = 0.
   for i in lista : tot = tot + float (i)
   return tot / len (lista)
@@ -78,10 +81,19 @@ def ave (lista):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
 
 
-def getOTdifference (history, metric):
+def getOTdifference (history, metric) :
   return ave (history.history['val_' + metric][-5:]) \
          - ave (history.history[metric][-5:])
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+
+def saveHistory (history, folder) :
+  fileBaseName = getNextName ('DNNhistory', folder)
+  file_path = pathlib.Path (folder + '/' + fileBaseName + '.pkl')
+  with file_path.open('wb') as file:
+    pickle.dump (history, file)
+
+
 

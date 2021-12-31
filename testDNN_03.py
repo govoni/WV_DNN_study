@@ -149,9 +149,9 @@ if __name__ == "__main__":
         verbose         = False ,
     )
 
-  plotMetric (history, 'loss')
+  plotMetric (history.history, 'loss')
   for metric in config['study']['DNNmetrics'].split ():
-    plotMetric (history, metric.lower ())
+    plotMetric (history.history.hi, metric.lower ())
 
 
 

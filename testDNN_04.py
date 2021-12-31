@@ -155,9 +155,9 @@ if __name__ == "__main__":
         verbose         = False ,
     )
 
-  plotMetric (history, 'loss', outFolder)
+  plotMetric (history.hitory, 'loss', outFolder)
   for metric in config['study']['DNNmetrics'].split ():
-    plotMetric (history, metric.lower (), outFolder)
+    plotMetric (history.history, metric.lower (), outFolder)
 
 
 

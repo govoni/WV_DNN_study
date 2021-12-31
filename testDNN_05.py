@@ -141,21 +141,20 @@ if __name__ == "__main__":
   # -------------------
 
   OT_measures = {metric : [] for metric in config['study']['DNNmetrics'].split () + ['loss']}
-  nToys = 20
+  nToys = 100
 
   # loop of toys generation
   for i in range (nToys):
     print ('TOY ', i)
     history = run (X_scaled, Y,  W, Wnn, config)
+    saveHistory (history.history, outFolder)
     for metric in config['study']['DNNmetrics'].split () + ['loss']:
       OT_measures[metric].append (getOTdifference (history, metric.lower ()))
-    plotMetric (history, 'loss')
-
 
     # END - loop of toys generation
 
   for key in OT_measures:
     plt.hist (OT_measures[key], bins = 10, histtype  = 'stepfilled', color = 'orange')
-    plt.savefig ('OT_' + key + '.png')
+    plt.savefig (outFolder + '/OT_' + key + '.png')
     plt.clf ()
 
