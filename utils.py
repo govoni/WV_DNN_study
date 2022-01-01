@@ -7,6 +7,17 @@ import configparser
 import matplotlib.pyplot as plt
 
 
+def getLastName (tag, folder = './') :
+  paths = [elem for elem in os.listdir (folder) if elem.startswith (tag)]
+  num = int (1)
+  if (len (paths) > 0) :
+    num = sorted ([int (elem.split ('.')[0].split ('-')[-1]) for elem in paths])[-1]
+  return tag + '-' + str (num).zfill (3)
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+
 def getNextName (tag, folder = './') :
   paths = [elem for elem in os.listdir (folder) if elem.startswith (tag)]
   num = int (1)
