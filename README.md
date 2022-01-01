@@ -25,6 +25,8 @@
   * ```testDNN_05.py```: check dropout layers with toys (works with ```params-boost_sig_mu_02.cfg```)
   * ```testDNN_06.py```: fix the Adam optimizer and implement some more input params (works with ```params-boost_sig_mu_02.cfg```)
   * ```readHistory.py```: example on ho to read a saved DNN training history file (works with ```params-boost_sig_mu.cfg```)
+  * ```plotTrainingTrends.py```: use the output of ```testDNN_05.py``` to look at training figure of merit trends
+  # ```checkWeights.py```: simple training model to see the effect of event weights
 
 
 ## TODO
@@ -57,8 +59,8 @@
     * with 50-50 splitting of the samples
     * it remains the same also if the samples are swapped
   * why isn't the result of the training deterministic?
-  * why does the training evolution (e.g. the loss functon) depends on the total number of epochs?
   * why is the overtraining visibile only in the loss function and non in other metrics?
+    * AUC shows it as well somehow
   * how do weights are used? (see discussion w/ Simone and Giulia)
 
 ## USEFUL LINKS

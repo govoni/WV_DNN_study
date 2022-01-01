@@ -46,20 +46,22 @@ def getHistory (folderName) :
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-def addTrend (plt, xvals, results, plot, color, label) :
-  # simple error bars
-  # plt.errorbar (x, results[plot][0], 
-  #               yerr = results[plot][1], label = label, color = color)
-  # filled area with white line in the middle
-  plt.fill_between (x,  results[plot][0] - results[plot][1], 
+def addTrend (plt, x, results, plot, color, label, mode = 1) :
+  if (mode == 1) :
+    plt.fill_between (x,  results[plot][0] - results[plot][1], 
                    results[plot][0] + results[plot][1], 
                    color = color, label = label, alpha = 0.5)
-#  plt.plot (x, results[plot][0], color = 'white')
-  plt.plot (x, results[plot][0], color = color)
+    # plt.plot (x, results[plot][0], color = 'white')
+    plt.plot (x, results[plot][0], color = color)
+  elif (mode == 2) :
   # three lines: extreme ones and central one
-  # plt.plot (x, results[plot][0], color = color, label = label)
-  # plt.plot (x, results[plot][0] - results[plot][1], color = color)
-  # plt.plot (x, results[plot][0] + results[plot][1], color = color)
+    plt.plot (x, results[plot][0], color = color, label = label)
+    plt.plot (x, results[plot][0] - results[plot][1], color = color)
+    plt.plot (x, results[plot][0] + results[plot][1], color = color)
+  else :
+  # simple error bars
+    plt.errorbar (x, results[plot][0], 
+                  yerr = results[plot][1], label = label, color = color)
 
 
 # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====

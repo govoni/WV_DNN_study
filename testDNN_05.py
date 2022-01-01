@@ -25,7 +25,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropout, LeakyReLU
 from tensorflow.keras.optimizers.schedules import InverseTimeDecay
 
-
 from utils import *
 
 
