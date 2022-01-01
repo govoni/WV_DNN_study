@@ -69,8 +69,17 @@ def run (X_scaled, Y,  W, Wnn, config):
       model.add (Dropout (float (config['study'][DNNlayers[iLayer]].split ()[1])))
     # END - loop to add subsequent layers
 
+  optimizer = tf.keras.optimizers.Adam (
+      learning_rate = float (config['study']['DNNoptLearnR']) ,
+      beta_1        = float (config['study']['DNNoptBeta1']) ,
+      beta_2        = float (config['study']['DNNoptBeta2']) ,
+      epsilon       = float (config['study']['DNNoptWpsil']) ,
+      amsgrad       = False ,
+      name          = "Adam" ,
+    )
+
   model.compile (
-      optimizer = config['study']['DNNoptimizer'] ,
+      optimizer = optimizer ,
       loss      = config['study']['DNNloss'] ,
       metrics   = config['study']['DNNmetrics'].split () ,
     )
