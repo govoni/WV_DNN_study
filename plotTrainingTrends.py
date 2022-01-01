@@ -7,34 +7,10 @@ from matplotlib import pyplot as plt
 from utils import *
 
 
-def addTrend (plt, xvals, results, plot, color, label) :
-  # simple error bars
-  # plt.errorbar (x, results[plot][0], 
-  #               yerr = results[plot][1], label = label, color = color)
-  # filled area with white line in the middle
-  plt.fill_between (x,  results[plot][0] - results[plot][1], 
-                   results[plot][0] + results[plot][1], 
-                   color = color, label = label, alpha = 0.5)
-#  plt.plot (x, results[plot][0], color = 'white')
-  plt.plot (x, results[plot][0], color = color)
-  # three lines: extreme ones and central one
-  # plt.plot (x, results[plot][0], color = color, label = label)
-  # plt.plot (x, results[plot][0] - results[plot][1], color = color)
-  # plt.plot (x, results[plot][0] + results[plot][1], color = color)
+def getHistory (folderName) :
+  print ('reading', folderName)
 
-
-# ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
-
-
-if __name__ == "__main__":
-
-  parser = argparse.ArgumentParser ()
-  parser.add_argument ("-f","--folder", help="results folder", type=str)
-  args = parser.parse_args ()
-
-  print ('reading', args.folder)
-
-  historyFileNames = [args.folder + '/' + elem for elem in os.listdir (args.folder) if elem.startswith ('DNNhistory')]
+  historyFileNames = [folderName + '/' + elem for elem in os.listdir (folderName) if elem.startswith ('DNNhistory')]
   
   toys = len (historyFileNames)
   print ('analysing', toys, 'history files')
@@ -64,6 +40,38 @@ if __name__ == "__main__":
   for key in results:
     results[key][0] = results[key][0] / toys
     results[key][1] = np.sqrt (results[key][1] / toys - results[key][0] * results[key][0])
+  return results, epochs, foms
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+def addTrend (plt, xvals, results, plot, color, label) :
+  # simple error bars
+  # plt.errorbar (x, results[plot][0], 
+  #               yerr = results[plot][1], label = label, color = color)
+  # filled area with white line in the middle
+  plt.fill_between (x,  results[plot][0] - results[plot][1], 
+                   results[plot][0] + results[plot][1], 
+                   color = color, label = label, alpha = 0.5)
+#  plt.plot (x, results[plot][0], color = 'white')
+  plt.plot (x, results[plot][0], color = color)
+  # three lines: extreme ones and central one
+  # plt.plot (x, results[plot][0], color = color, label = label)
+  # plt.plot (x, results[plot][0] - results[plot][1], color = color)
+  # plt.plot (x, results[plot][0] + results[plot][1], color = color)
+
+
+# ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
+
+
+if __name__ == "__main__":
+
+  parser = argparse.ArgumentParser ()
+  parser.add_argument ("-f","--folder", help="results folder", type=str)
+  args = parser.parse_args ()
+
+  results, epochs, foms = getHistory (args.folder)
 
   plots = [fom for fom in foms if not (fom.startswith ('val'))]
 
