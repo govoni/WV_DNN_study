@@ -21,8 +21,10 @@
   * ```testDNN_02.py```: prepare one input signal and one input bkg sample, 
     build a DNN model based on parameters from the config file (works with ```params-boost_sig_mu_01.cfg```)
   * ```testDNN_03.py```: configure the first training of the DNN model (works with ```params-boost_sig_mu_01.cfg```)
-  * ```testDNN_04.py```: add dropout layers (works with ```params-boost_sig_mu.cfg```)
-  * ```testDNN_05.py```: check dropout layers with toys (works with ```params-boost_sig_mu.cfg```)
+  * ```testDNN_04.py```: add dropout layers (works with ```params-boost_sig_mu_02.cfg```)
+  * ```testDNN_05.py```: check dropout layers with toys (works with ```params-boost_sig_mu_02.cfg```)
+  * ```testDNN_06.py```: fix the Adam optimizer and implement some more input params (works with ```params-boost_sig_mu_02.cfg```)
+  * ```readHistory.py```: example on ho to read a saved DNN training history file (works with ```params-boost_sig_mu.cfg```)
 
 
 ## TODO
@@ -41,10 +43,12 @@
   * DNN
     * first training with signal and one background  
     * early stopping
-    * learning updating
+    * learning updating e learning rate (dipende dal numero di epoche prestabilite?), 
+      che metodo di minimizzazione sto utilizzando?
     * weights decay
   * codice
     * training output folder with all needed infoes and plots
+    * check mem leaks in testDNN_05
 
 ## QUESTIONS
 
@@ -55,7 +59,10 @@
   * why isn't the result of the training deterministic?
   * why does the training evolution (e.g. the loss functon) depends on the total number of epochs?
   * why is the overtraining visibile only in the loss function and non in other metrics?
+  * how do weights are used? (see discussion w/ Simone and Giulia)
 
 ## USEFUL LINKS
 
-  * https://github.com/UniMiBAnalyses/ML_classification/blob/master/Training_v3_resolved_weights_Aurora.ipynb
+  * [MIB code example](https://github.com/UniMiBAnalyses/ML_classification/blob/master/Training_v3_resolved_weights_Aurora.ipynb)
+  * [Adam optimizer](https://arxiv.org/abs/1412.6980)
+  * [program creek[(https://www.programcreek.com/)
