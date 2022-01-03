@@ -69,25 +69,23 @@ if __name__ == "__main__" :
   parser = argparse.ArgumentParser ()
   parser.add_argument ("-w0","--weight0", help="weight for sample H0", type = float)
   parser.add_argument ("-w1","--weight1", help="weight for sample H1", type = float)
+  parser.add_argument ("-N","--Nevt", help="number of events", type = int)
   args = parser.parse_args ()
 
   # input samples generation and visualisation
   # ------------------------------------------
 
-  N_evt = 1000
-
   ave_H0 = np.array ([0., 0.])
   cov_H0 = np.array ([[1., 0.3], [0.3 ,1. ]])
-  s_H0 = np.random.multivariate_normal (ave_H0, cov_H0, N_evt)
-  w_H0 = np.full (N_evt, args.weight0)
-  y_H0 = np.full (N_evt, 0.)
-
+  s_H0 = np.random.multivariate_normal (ave_H0, cov_H0, args.Nevt)
+  w_H0 = np.full (args.Nevt, args.weight0)
+  y_H0 = np.full (args.Nevt, 0.)
 
   ave_H1 = np.array ([3., 2.])
   cov_H1 = np.array ([[1., -0.5], [-0.5 ,1. ]])
-  s_H1 = np.random.multivariate_normal (ave_H1, cov_H1, N_evt)
-  w_H1 = np.full (N_evt, args.weight1)
-  y_H1 = np.full (N_evt, 1)
+  s_H1 = np.random.multivariate_normal (ave_H1, cov_H1, args.Nevt)
+  w_H1 = np.full (args.Nevt, args.weight1)
+  y_H1 = np.full (args.Nevt, 1)
 
   fig, axs = plt.subplots (2, 2)
   fig.tight_layout(pad = 2.0)
@@ -176,23 +174,24 @@ if __name__ == "__main__" :
   axs[1,1].set (xlabel = 'weight')
   axs[1,1].legend ()
  
-  fig.savefig ('CW_input.png')
+  fig.savefig ('CW_' + str (args.weight0) + '_' + str (args.weight1) + '_' + str (args.Nevt) + '_init.png')
   plt.clf ()
 
   # DNN model preparation and run
   # ------------------------------------------
 
-  X    = np.vstack ([s_H0, s_H1])
-  Y    = np.hstack ([y_H0, y_H1])
-  W    = np.hstack ([w_H0, w_H1])
+  X     = np.vstack ([s_H0, s_H1])
+  Y     = np.hstack ([y_H0, y_H1])
+  W     = np.hstack ([w_H0, w_H1])
 
-  nToys = 400
+  nToys = 100
 
   loss = []
   for iToy in range (nToys) :
+    print ('toy', iToy)
     history = run (X, Y, W)
     loss.append (history.history['loss'][-1])
 
   plt.hist (loss)
-  fig.savefig ('CW_loss.png')
+  fig.savefig ('CW_' + str (args.weight0) + '_' + str (args.weight1) + '_' + str (args.Nevt) + '_loss.png')
 
