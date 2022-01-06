@@ -2,7 +2,7 @@
 
 '''
 usage example:
-./checkWeights_01.py -w1 0.1 -w0 0.1 -N 1000
+./checkWeights_02.py -w1 0.1 -w0 0.1 -N 1000
 '''
 
 import argparse 
@@ -22,48 +22,6 @@ from tensorflow.keras import callbacks
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation, BatchNormalization, Dropout, LeakyReLU
 from tensorflow.keras.optimizers.schedules import InverseTimeDecay
-
-
-
-def run (X, Y, W) :
-
-  # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-  X_train, X_test, Y_train, Y_test, W_train, W_test = \
-    train_test_split (
-      X, Y,  W, 
-      test_size    = 0.5,    # fraction of samples used for testing
-      random_state = 41,     # equivalent to the random seed
-      stratify     = Y       # useful with several classes of samples, it seems
-    )
-
-  # build the DNN model
-  # -------------------
-
-  # the DNN model
-  #  - https://www.tensorflow.org/api_docs/python/tf/keras/Model
-  model = Sequential ()
-  # add input layer
-  model.add (Dense (5, input_dim = 2 , activation = 'relu'))
-  model.add (Dense (5, activation = 'relu'))
-  model.add (Dense (1, activation = 'sigmoid'))
-
-  model.compile (
-      optimizer = tf.keras.optimizers.Adam () ,
-      loss      = 'binary_crossentropy',
-    )
-
-  history = model.fit (
-        X_train, Y_train,
-        sample_weight   = W_train ,
-        epochs          = 10 ,
-        validation_data = (X_test, Y_test, W_test) ,
-        callbacks       = [] ,
-        shuffle         = True ,
-        batch_size      = 32 ,
-        verbose         = False ,
-    )
-
-  return history
 
 
 # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
@@ -189,14 +147,56 @@ if __name__ == "__main__" :
   Y     = np.hstack ([y_H0, y_H1])
   W     = np.hstack ([w_H0, w_H1])
 
-  nToys = 100
+  X_train, X_test, Y_train, Y_test, W_train, W_test = \
+    train_test_split (
+      X, Y,  W, 
+      test_size    = 0.5,    # fraction of samples used for testing
+      random_state = 41,     # equivalent to the random seed
+      stratify     = Y       # useful with several classes of samples, it seems
+    )
 
-  loss = []
-  for iToy in range (nToys) :
-    print ('toy', iToy)
-    history = run (X, Y, W)
-    loss.append (history.history['loss'][-1])
+  # build the DNN model
+  # -------------------
 
-  plt.hist (loss)
-  fig.savefig ('CW_' + str (args.weight0) + '_' + str (args.weight1) + '_' + str (args.Nevt) + '_losses.png')
+  # the DNN model
+  #  - https://www.tensorflow.org/api_docs/python/tf/keras/Model
+  model = Sequential ()
+  # add input layer
+  model.add (Dense (5, input_dim = 2 , activation = 'relu'))
+  model.add (Dropout (0.1))
+  model.add (Dense (5, activation = 'relu'))
+  model.add (Dense (1, activation = 'sigmoid'))
+
+  # loss function used locally
+  l_loss = tf.keras.losses.BinaryCrossentropy ()
+
+  model.compile (
+      optimizer = tf.keras.optimizers.Adam () ,
+      loss      = l_loss,
+    )
+
+  history = model.fit (
+        X_train, Y_train,
+        sample_weight   = W_train ,
+        epochs          = 100 ,
+        validation_data = (X_test, Y_test, W_test) ,
+        callbacks       = [] ,
+        shuffle         = True ,
+        batch_size      = 32 ,
+        verbose         = False ,
+    )
+
+out_test = model.predict (X_test)
+out_train = model.predict (X_train)
+
+loss_test = []
+for i in range (X_test.shape[0]) :
+    loss = l_loss (out_test[i], X_test[i])
+#    print (i, loss.numpy ())
+#    print (i, type (loss.numpy ()))
+    loss_test.append (loss.numpy ())
+
+plt.hist (loss_test)
+fig.savefig ('CW_' + str (args.weight0) + '_' + str (args.weight1) + '_' + str (args.Nevt) + '_loss.png')
+    
 
